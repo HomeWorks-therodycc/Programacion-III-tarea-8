@@ -7,6 +7,7 @@
             <th>Nombre</th>
             <th>Telefono</th>
             <th>Fecha de nacimiento</th>
+            <th>Latitud</th>
             <th><div class='btn @(Vacunado.Vacuna1Id.HasValue ? "btn-success":"btn-danger")'>Vacuna #1</div></th>
             <th><div class='btn @(Vacunado.Vacuna2Id.HasValue ? "btn-success":"btn-danger")'>Vacuna #2</div></th>
             @* <th class='btn @(Vacunado.Vacuna2Id.HasValue ? "btn-success":"btn-danger")'>Vacuna #2</th> *@
@@ -16,6 +17,10 @@
             <td>@Vacunado.Nombre</td>
             <td>@Vacunado.Telefono</td>
             <td>@Vacunado.FechaNacimiento.ToShortDateString()</td>
+            <td>
+                @((Vacunado.Latitud.HasValue) 
+                ? Vacunado.Latitud.Value : "N/A")
+            </td>
             <td>
                 @((Vacunado.Vacuna1Id.HasValue) 
                 ? Vacunado.Vacuna1.Marca : "N/A")
@@ -30,6 +35,7 @@
             <th>Apellido</th>
             <th>Provincia</th>
             <th>Signo Zodiacal</th>
+            <th>Longitud</th>
             <th>Fecha</th>
             <th>Fecha</th>
         </tr>
@@ -38,6 +44,10 @@
             <td>@Vacunado.Apellido</td>
             <td>@Vacunado.Provincia.Nombre</td>
             <td>@Vacunado.SignoZodiacal</td>
+            <td>
+                @((Vacunado.Longitud.HasValue) 
+                ? Vacunado.Longitud.Value : "N/A")
+            </td>
             <td>
                 @((Vacunado.Vacuna1Fecha.HasValue) ?
                 Vacunado.Vacuna1Fecha.Value.ToShortDateString()

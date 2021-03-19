@@ -1,9 +1,13 @@
 @page "/registrar"
 @using Data.Models
+@using BlazorLeaflet
+@using BlazorLeaflet.Models
+@using BlazorLeaflet.Models.Events
 @using Microsoft.AspNetCore.Components.Forms
 @inject vacunaContext vc
+@inject IJSRuntime jsr
 @inject HttpClient http
-
+@inject NavigationManager nm
 
 
 <h3 class="titulocantvacuna">Registrar Vacunado</h3>
@@ -17,12 +21,6 @@
     </div>
 </div>
 <br>
-@if (error != "")
-{
-    <div class="alert alert-danger" role="alert">
-        @error
-    </div>
-}
 @if (vacunado != null)
 {
     <EditForm Model="vacunado" OnValidSubmit="vacunadoValido">
@@ -36,7 +34,7 @@
             </tr>
             <tr>
                 <td>Nombres</td>
-                <td><InputText @bind-Value="vacunado.Nombre" class="form-control"  aria-label="Disabled input example" disabled /></td>
+                <td><InputText @bind-Value="vacunado.Nombre" class="form-control" /></td>
                 <td></td>
             </tr>
             <tr>
@@ -65,6 +63,14 @@
                     </InputSelect>
                 </td>
                 <td></td>
+            </tr>
+            <tr>
+                <td>Ubicacion</td>
+                <td colspan="2">
+                    <div id="mapContainer" style="width: 90%; height: 300px;">
+                        <LeafletMap Map="mapa" />
+                    </div>
+                </td>
             </tr>
             <tr>
                 <td>
@@ -100,22 +106,18 @@
                 </td>
             }
             </tr>
-            @* <tr>
-                <td>Latitud</td>
-                <td><input type="text" class="form-control"></td>
-                <td></td>
-            </tr>
-            <tr>
-                <td>Longitud</td>
-                <td><input type="text" class="form-control"></td>
-                <td></td>
-            </tr> *@
         </table>
+        @if (error != "") {
+            <div class="alert alert-danger" role="alert">
+                @error
+            </div>
+        }
         <div class="w-25 mx-auto">
             <button type="submit" id="btn-add-vacunado" class="btn btn-success">Guardar</button>
         </div>
     </EditForm>
 }
+<br>
 
 @code {
     private string cedulaInput = "";
@@ -126,6 +128,8 @@
     private bool existente = false;
     private bool nuevo = true;
 
+    private Map mapa = null;
+    private Marker ubicacionVacunado = null;
 
     private void parseaCedula() {
         cedula = cedulaInput.Replace("-", "").Replace(" ", "");
@@ -144,6 +148,7 @@
             existente = true;
             nuevo = false;
             error = "";
+            iniciarMapa();
         }
         catch (InvalidOperationException) {
             buscaEnApi();
@@ -177,11 +182,17 @@
             FechaNacimiento = fechaNacimiento,
             SignoZodiacal = fechaNacimiento.toZodiacSign()
         };
+        iniciarMapa();
     }
 
     private void vacunadoValido() {
-        if (existente && (!vacunado.Vacuna2Id.HasValue || !vacunado.Vacuna2Fecha.HasValue)) {
-            error = "Falta la fecha o la marca de la vacuna #2";
+        if (existente && vacunado.Vacuna2Id.HasValue && !vacunado.Vacuna2Fecha.HasValue) {
+            error = "Falta la fecha de la vacuna #2";
+            return;
+        }
+
+        if (existente && vacunado.Vacuna2Fecha.HasValue && !vacunado.Vacuna2Id.HasValue) {
+            error = "Falta la marca de la vacuna #2";
             return;
         }
 
@@ -190,5 +201,43 @@
         }
 
         vc.SaveChanges();
+        nm.NavigateTo("/vacunados");
+    }
+
+    private void iniciarMapa() 
+    {
+        mapa = new Map(jsr) {
+            Center = new LatLng(18.9f, -70f),
+            Zoom = 7.47f
+        };
+
+        var Lat = vacunado.Latitud.HasValue ? vacunado.Latitud.Value : 19.5f;
+        var Lng = vacunado.Longitud.HasValue ? vacunado.Longitud.Value : -69.65f;
+
+        ubicacionVacunado = new Marker(19.5f, -69.65f) {
+            Draggable = true,
+            Title = "Ubicacion del Vacunado"
+        };
+
+        mapa.OnInitialized += () => {
+            mapa.AddLayer(new TileLayer {                
+                UrlTemplate = "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
+                Attribution = "&copy; <a href=\"https://www.openstreetmap.org/copyright\">OpenStreetMap</a> contributors",
+            });
+            mapa.AddLayer(ubicacionVacunado);
+        };
+
+        mapa.OnClick += (Map sender, MouseEvent e) => {
+            vacunado.Latitud = e.LatLng.Lat;
+            vacunado.Longitud = e.LatLng.Lng;
+            ubicacionVacunado.Position = e.LatLng;
+            mapa.RemoveLayer(ubicacionVacunado);
+            mapa.AddLayer(ubicacionVacunado);
+        };
+
+        ubicacionVacunado.OnDrag += (Marker sender, DragEvent e) => {
+            vacunado.Latitud = e.LatLng.Lat;
+            vacunado.Longitud = e.LatLng.Lng;
+        };
     }
 }
