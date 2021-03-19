@@ -1,0 +1,35 @@
+@page "/configuracion"
+@using Data.Models
+@using Microsoft.EntityFrameworkCore
+@inject vacunaContext vc
+
+<h3 class="titulocantvacuna">Configuration</h3>
+<div>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Marca</th>
+                <th>Cantidad</th>
+                <th>Total</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (Vacuna va in vac())
+            {
+                <tr>
+                    <td>@va.Id</td>
+                    <td>@va.Marca</td>
+                    <td>@va.CantidadRestante</td>
+                    <td>@va.CantidadEntrante</td>
+                </tr>
+            }
+        </tbody>
+        
+    </table>
+</div>
+
+@code{
+    List<Vacuna> vac() => new vacunaContext().Vacunas.ToList();
+    
+}

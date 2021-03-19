@@ -1,0 +1,42 @@
+@page "/Listbyprovincia"
+@using Data.Models
+
+@using Microsoft.EntityFrameworkCore
+@inject vacunaContext vc
+
+<h3 class="titulocantvacuna">Listado de vacunados por provincia</h3>
+
+<br>
+<div class="input-group w-50">
+    <label for="provinciaFiltro" class="input-group-text">Provincia</label>
+    <select id="provinciaFiltro" @bind="provinciaFiltro" class="form-control">
+        @foreach (var p in provincias)
+        {
+            <option value=@p.Id>@p.Nombre</option>
+        }
+    </select>
+</div>
+<br>
+
+<div>
+    <table class="table">
+        @foreach (var va in vacunados.Where(x => x.ProvinciaId == provinciaFiltro))
+        {
+            <VacunadoCard Vacunado="va" />
+        }
+    </table>
+</div>
+
+
+
+@code {
+    private List<Provincia> provincias = null;
+    private List<Vacunado> vacunados = null;
+    private int provinciaFiltro;
+    
+    protected override void OnInitialized() {
+        vacunados = vc.Vacunados.Include("Provincia")
+            .Include("Vacuna1").Include("Vacuna2").ToList();
+        provincias = vc.Provincias.ToList();
+    }
+}

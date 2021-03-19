@@ -1,0 +1,58 @@
+@using Data.Models
+
+<div  class='alert @(Vacunado.Id%2 == 0 ? "alert-info":"alert-success")' role="alert">
+    <table class="table">
+        <tr>
+            <th>Id</th>
+            <th>Nombre</th>
+            <th>Telefono</th>
+            <th>Fecha de nacimiento</th>
+            <th><div class='btn @(Vacunado.Vacuna1Id.HasValue ? "btn-success":"btn-danger")'>Vacuna #1</div></th>
+            <th><div class='btn @(Vacunado.Vacuna2Id.HasValue ? "btn-success":"btn-danger")'>Vacuna #2</div></th>
+            @* <th class='btn @(Vacunado.Vacuna2Id.HasValue ? "btn-success":"btn-danger")'>Vacuna #2</th> *@
+        </tr>
+        <tr>
+            <td>@Vacunado.Id</td>
+            <td>@Vacunado.Nombre</td>
+            <td>@Vacunado.Telefono</td>
+            <td>@Vacunado.FechaNacimiento.ToShortDateString()</td>
+            <td>
+                @((Vacunado.Vacuna1Id.HasValue) 
+                ? Vacunado.Vacuna1.Marca : "N/A")
+            </td>
+            <td>
+                @((Vacunado.Vacuna2Id.HasValue)
+                ? Vacunado.Vacuna2.Marca : "N/A")
+            </td>
+        </tr>
+        <tr>
+            <th>Cedula</th>
+            <th>Apellido</th>
+            <th>Provincia</th>
+            <th>Signo Zodiacal</th>
+            <th>Fecha</th>
+            <th>Fecha</th>
+        </tr>
+        <tr>
+            <td>@Vacunado.Cedula</td>
+            <td>@Vacunado.Apellido</td>
+            <td>@Vacunado.Provincia.Nombre</td>
+            <td>@Vacunado.SignoZodiacal</td>
+            <td>
+                @((Vacunado.Vacuna1Fecha.HasValue) ?
+                Vacunado.Vacuna1Fecha.Value.ToShortDateString()
+                : "N/A")
+            </td>
+            <td>
+                @((Vacunado.Vacuna2Fecha.HasValue) ?
+                Vacunado.Vacuna2Fecha.Value.ToShortDateString()
+                : "N/A")
+            </td>
+        </tr>
+    </table>
+</div>
+
+@code {
+    [Parameter]
+    public Vacunado Vacunado { get; set; }
+}

@@ -1,0 +1,50 @@
+@page "/vacunados"
+@using Data.Models
+
+@using Microsoft.EntityFrameworkCore
+@inject vacunaContext vc
+
+
+<h3 class="titulocantvacuna">Vacunados</h3>
+
+<br>
+<div class="input-group w-50">
+    <label for="filtro" class="input-group-text">Nombre o Apellido</label>
+    <input id="filtro" type="text" @bind="filtro" class="form-control" />
+    <div>
+        <button @onclick="buscar" class="btn btn-success">Buscar</button>
+    </div>
+</div>
+<br>
+
+@if (vacunados == null)
+{
+    <div class="spinner-border text-secondary" role="status">
+        <span class="sr-only">Loading...</span>
+    </div>
+}
+else
+{
+    @foreach (var va in vacunadosFiltrados)
+    {
+        <VacunadoCard Vacunado="va" />
+    }
+}
+@code {
+    private string filtro = "";
+    private List<Vacunado> vacunadosFiltrados = null;
+    private List<Vacunado> vacunados = null;
+        
+    protected override void OnInitialized()
+    {
+        vacunados = vc.Vacunados.Include("Provincia")
+            .Include("Vacuna1").Include("Vacuna2").ToList();
+        vacunadosFiltrados = vacunados;
+    }
+    private void buscar() 
+    {
+        vacunadosFiltrados = vacunados
+            .Where(x => x.Nombre.ToLower().Contains(filtro)|| x.Apellido.ToLower().Contains(filtro))
+            .ToList();
+    }
+}

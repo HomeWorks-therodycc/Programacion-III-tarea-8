@@ -1,0 +1,48 @@
+@page "/Listbysigno"
+@using Data.Models
+@using Microsoft.EntityFrameworkCore
+@inject vacunaContext vc
+
+<h3 class="titulocantvacuna">Cantidad de personas vacunadas por vacuna</h3>
+
+<br>
+
+<div class="contenido-counts">
+    @foreach (var s in signos)
+    {
+        <div class="small-box-signos">
+            <div class="inner">
+                <h3>@s</h3>
+                <p> @vacunados.Count(x => x.SignoZodiacal == s)</p>
+            </div>
+            <div class="icon">
+                <i class="oi oi-person"></i>
+            </div>
+        </div>
+    }
+</div>
+
+
+
+@code {
+
+    private List<Vacunado> vacunados = null;
+    private List<string> signos = new List<string>{
+        "Acuario", 
+        "Piscis", 
+        "Aries", 
+        "Tauro", 
+        "Geminis", 
+        "Cancer", 
+        "Leo", 
+        "Libra", 
+        "Virgo", 
+        "Escorpio", 
+        "Sagitario", 
+        "Capricornio" 
+    };
+    
+    protected override void OnInitialized() {
+        vacunados = vc.Vacunados.ToList();
+    }
+}
