@@ -1,0 +1,71 @@
+@page "/Listbyvacuna"
+@using Data.Models
+@using Microsoft.EntityFrameworkCore
+@inject vacunaContext vc
+@inject IJSRuntime JS;
+
+<h3 class="titulocantvacuna">Cantidad de personas vacunadas </h3>
+
+<div class="contenido-counts">
+    @foreach (var v in vacunas)
+    {
+        <div class="small-box">
+            <div class="inner">
+                <h3>@(v.CantidadEntrante - v.CantidadRestante)</h3>
+                <p>@v.Marca</p>
+            </div>
+            <div class="icon">
+                <i class="oi oi-person"></i>
+            </div>
+        </div>
+    }
+</div>
+
+
+<div>
+    <canvas id="myChart" width="800" height="400" class="mx-auto"></canvas>
+</div>
+
+
+
+<div class="alert alert-success" role="alert">
+  Listado de vacunas
+</div>
+<table class="table mb-40">
+    <tr>
+        <td>Id</td>
+        <td>Nombre</td>
+        <td></td>
+    </tr>
+    @foreach (var item in vacunas)
+    {
+    <tr>
+        <td>@item.Id</td>
+        <td>@item.Marca</td>
+        <td>
+        <button type="button" class="btn btn-info">E</button> 
+        <button type="button" class="btn btn-danger">D</button> 
+        </td>
+    </tr>
+ }
+</table>
+
+
+
+@code {
+    private List<Vacuna> vacunas = null;
+    
+    protected override void OnInitialized() {
+        vacunas = vc.Vacunas.ToList();
+    }
+
+    protected override void OnAfterRender(bool firstRender) {
+        List<string> marcas = new List<string>();
+        List<int> datos = new List<int>();
+        foreach (var v in vacunas) {
+            marcas.Add(v.Marca);
+            datos.Add(v.CantidadEntrante - v.CantidadRestante);
+        }
+        JS.InvokeVoidAsync("vacunasChart", marcas, datos);
+    }
+}
