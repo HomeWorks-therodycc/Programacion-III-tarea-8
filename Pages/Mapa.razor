@@ -44,10 +44,10 @@
             foreach (var v in vacunados) {
 
                 var marker = new Marker(v.Latitud.Value, v.Longitud.Value) {
-                    Title = v.Vacuna1.Marca,
+                    Title = v.Cedula,
                     RiseOnHover = true,
                     Tooltip = new Tooltip() {
-                        Content = $"{v.Cedula}",
+                        Content = $"{v.Vacuna1.Marca}",
                         IsPermanent = true
                     }
                 };
@@ -55,7 +55,7 @@
                 marker.OnClick += (InteractiveLayer sender, MouseEvent e) => {
                     var marker = (Marker) sender;
 
-                    vacunado = vc.Vacunados.First(x => x.Vacuna1.Marca == Convert.ToString(marker.Title));
+                    vacunado = vc.Vacunados.First(x => x.Cedula == Convert.ToString(marker.Title));
 
                     StateHasChanged();
                 };
