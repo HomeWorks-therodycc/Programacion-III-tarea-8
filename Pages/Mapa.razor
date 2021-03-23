@@ -46,11 +46,14 @@
             foreach (var v in vacunados) {
 
                 var marker = new Marker(v.Latitud.Value, v.Longitud.Value) {
-                    Title = v.Cedula + esp + v.Nombre,
+                    Title = v.Cedula,
                     RiseOnHover = true,
                     Tooltip = new Tooltip() {
-                        Content = $"{v.Vacuna1.Marca}",
-                        IsPermanent = true
+                        Content = $"{v.Cedula}<br>{v.Nombre} {v.Apellido}" + 
+                            $"<br>Vacuna 1: {v.Vacuna1.Marca}<br>" +
+                            $"Vacuna 2: {(v.Vacuna2Id.HasValue ? v.Vacuna2.Marca : "N/A")}",
+                        Direction = "top",
+                        Offset = new System.Drawing.Point(-15, -10){}
                     }
                 };
 

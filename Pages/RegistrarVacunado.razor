@@ -214,7 +214,7 @@
         var Lat = vacunado.Latitud.HasValue ? vacunado.Latitud.Value : 19.5f;
         var Lng = vacunado.Longitud.HasValue ? vacunado.Longitud.Value : -69.65f;
 
-        ubicacionVacunado = new Marker(19.5f, -69.65f) {
+        ubicacionVacunado = new Marker(Lat, Lng) {
             Draggable = true,
             Title = "Ubicacion del Vacunado"
         };
