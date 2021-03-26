@@ -8,17 +8,20 @@
 @using Microsoft.EntityFrameworkCore
 @inject IJSRuntime jsr
 @inject vacunaContext vc
+
+
+<h3 class="titulocantvacuna">Mapa de vacunados</h3>
 <br>
 <div id="mapContainer" style="width: 100%; height: 480px;">
-    <h3 class="titulocantvacuna">Mapa de vacunados</h3>
     <LeafletMap Map="mapa"  />
 </div>
-<br/>
+<br>
 @if (vacunado != null) {
     <div>
         <VacunadoCard Vacunado="vacunado" />
     </div>
 }
+
 
 @code 
 {
